@@ -34,6 +34,13 @@ def pic_AND(pic1, pic2):
     and_pic[and_table] = 255
     return and_pic
 
+def erode_dilate_for(number, pic):
+    kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
+    for _ in range(number):
+        pic = cv.erode(pic, kernel)
+        pic = cv.dilate(pic, kernel)
+
+    return pic
 
 if __name__ == "__main__":
     pass
