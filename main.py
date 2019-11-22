@@ -9,7 +9,6 @@ from glob import glob as glob
 file_names = glob("./fig/*")
 
 for file_name in file_names:
-    #GRB
     pic = cv.imread(file_name)
     pic_rbg = ft.face_binary_RBG(pic)
     pic_hsv = ft.face_binary_HSV(pic)

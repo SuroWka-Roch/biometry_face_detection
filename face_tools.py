@@ -28,11 +28,10 @@ def face_binary_HSV(pic):
     return hsv_binary
 
 def pic_AND(pic1,pic2):
-    print(pic1.shape)
-
     and_table = np.logical_and(pic1 == 255, pic2 == 255)
     and_pic = np.zeros((pic1.shape[0],pic1.shape[1]), np.uint8)
     and_pic[and_table] = 255
     return and_pic
+    
 if __name__ == "__main__":
     pass
