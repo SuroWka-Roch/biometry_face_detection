@@ -1,3 +1,7 @@
+import cv2 as cv
+import numpy as np
+
+
 def face_binary_RBG(pic):
     pic = pic.astype(int)
     pic = pic[:,:,2]-pic[:,:,1]
@@ -19,9 +23,16 @@ def face_binary_HSV(pic):
     v1 = np.logical_and(v1,v2_2)
     v1 = np.logical_and(v1,v3)
 
-    hsv_binary = np.zeros((pic_hsv.shape[0],pic_hsv.shape[1],3), np.uint8)
-    hsv_binary[v1] = np.array([255,255,255])
-    return pic_hsv
+    hsv_binary = np.zeros((pic_hsv.shape[0],pic_hsv.shape[1]), np.uint8)
+    hsv_binary[v1] = 255
+    return hsv_binary
 
+def pic_AND(pic1,pic2):
+    print(pic1.shape)
+
+    and_table = np.logical_and(pic1 == 255, pic2 == 255)
+    and_pic = np.zeros((pic1.shape[0],pic1.shape[1]), np.uint8)
+    and_pic[and_table] = 255
+    return and_pic
 if __name__ == "__main__":
     pass
