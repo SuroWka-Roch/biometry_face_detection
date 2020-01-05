@@ -76,24 +76,50 @@ def fill_holes(img):
     mask = np.zeros((hight+2, width+2), np.uint8)
     cv.floodFill(im_flood, mask, (0, 0), 0)
 
-    cv.imshow("flood", im_flood)
-
     pic_final = im_flood | img
-    cv.imshow("lol", pic_final)
-
     return pic_final
 
 
 def apply_mask(pic, pic_binary):
     hight = pic.shape[0]
     width = pic.shape[1]
-    new_image = np.zeros(pic.shape, dtype=np.uint8)
+    new_image = np.full(pic.shape, 255, dtype=np.uint8,)
     for h in range(hight):
         for w in range(width):
             if pic_binary[h][w] == 255:
                 new_image[h][w] = pic[h][w]
 
     return new_image
+
+
+def separate_elements(pic, mask):
+    scale = 1
+    delta = 0
+    ddepth = cv.CV_16S
+
+    picGRAY = cv.cvtColor(pic, cv.COLOR_RGB2GRAY)
+
+    picGRAY = cv.GaussianBlur(picGRAY, (3, 3), 0)
+
+    grad = cv.Sobel(picGRAY, ddepth, 0, 1)
+    grad = cv.convertScaleAbs(grad)
+
+    grad = ~grad
+
+    #erode mask
+    kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
+    mask = cv.erode(mask, kernel, iterations=10)
+
+    grad = apply_mask(grad, mask)
+
+    t, bin = cv.threshold(grad, np.average(pic), 255, cv.THRESH_OTSU)
+    picfinal = bin
+    return picfinal
+
+
+def get_vertical_histogram(bin):
+    histogram = np.sum(255-bin, axis=1)
+    return histogram
 
 
 if __name__ == "__main__":
