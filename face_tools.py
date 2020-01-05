@@ -42,37 +42,43 @@ def erode_dilate_for(number, pic):
 
     return pic
 
-def check_proportions(pic):
+def check_proportions(pic,tolerance=0.6):
     """Take binary return only spaces with golden proportions"""
     golden_proportion = 1.6
     im = pic.copy()
     
-    #Setup SimpleBlobDetector parameters.
-    params = cv.SimpleBlobDetector_Params()
+    picRBG = cv.cvtColor(im, cv.COLOR_GRAY2BGR)
 
-    params.blobColor= 255
-    # params.filterByColor = True
+    # Find the contour of the leming
+    contour,_ = cv.findContours(pic.copy(),cv.RETR_EXTERNAL,cv.CHAIN_APPROX_SIMPLE)
 
-    params.minThreshold = 0
-    params.maxThreshold = 255
 
-    params.minArea = 1500
+    # And draw it on the original image
+    for c in contour:
+        # enter your filtering here
+        x,y,w,h = cv.boundingRect(c)
+        cv.rectangle(picRBG,(x,y),(x+w,y+h),(0,255,0),2)
+        #find proportion
+        proportion = h/w
+        if abs(proportion-golden_proportion)>tolerance:
+            pic = cv.fillConvexPoly(pic,c,0)
 
-    detector = cv.SimpleBlobDetector_create(params)
-    
-
-    # Detect blobs.
-    keypoints = detector.detect(im)
-
-    print(keypoints)
-    
-    # Draw detected blobs as red circles.
-    # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-    im_with_keypoints = cv.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    
-    # Show keypoints
-    cv.imshow("Keypoints", im_with_keypoints)
+    cv.imshow("removed non perfect",pic)
     cv.waitKey(0)
+
+def fill_holes(img):
+    """Fill holes in binary image"""
+    hight = img.shape[0]
+    width = img.shape[1]
+
+    im_flood = ~img.copy()
+
+    mask = np.zeros((hight+2, width+2), np.uint8)
+    cv.floodFill(im_flood, mask, (0, 0), 255)
+
+    pic_final = im_flood & img
+
+    return pic_final
 
 
 
