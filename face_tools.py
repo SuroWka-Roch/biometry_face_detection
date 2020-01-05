@@ -42,5 +42,39 @@ def erode_dilate_for(number, pic):
 
     return pic
 
+def check_proportions(pic):
+    """Take binary return only spaces with golden proportions"""
+    golden_proportion = 1.6
+    im = pic.copy()
+    
+    #Setup SimpleBlobDetector parameters.
+    params = cv.SimpleBlobDetector_Params()
+
+    params.blobColor= 255
+    # params.filterByColor = True
+
+    params.minThreshold = 0
+    params.maxThreshold = 255
+
+    params.minArea = 1500
+
+    detector = cv.SimpleBlobDetector_create(params)
+    
+
+    # Detect blobs.
+    keypoints = detector.detect(im)
+
+    print(keypoints)
+    
+    # Draw detected blobs as red circles.
+    # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+    im_with_keypoints = cv.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    
+    # Show keypoints
+    cv.imshow("Keypoints", im_with_keypoints)
+    cv.waitKey(0)
+
+
+
 if __name__ == "__main__":
     pass

@@ -18,4 +18,5 @@ for file_name in file_names:
 
     pic_both = ft.erode_dilate_for(10,pic_both)
     cv.imshow("name2", pic_both)
+    ft.check_proportions(pic_both)
     cv.waitKey()
