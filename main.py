@@ -13,10 +13,14 @@ for file_name in file_names:
     pic_rbg = ft.face_binary_RBG(pic)
     pic_hsv = ft.face_binary_HSV(pic)
     pic_both = ft.pic_AND(pic_hsv, pic_rbg)
-    cv.imshow("name1", pic_both)
 
-
-    pic_both = ft.erode_dilate_for(10,pic_both)
+    pic_both = ft.erode_dilate_for(10, pic_both)
     cv.imshow("name2", pic_both)
     ft.check_proportions(pic_both)
+    pic_mask = ft.fill_holes(pic_both)
+    cv.imshow("mask", pic_mask)
+
+    pic_seperated = ft.apply_mask(pic, pic_mask)
+
+    cv.imshow("final", pic_seperated)
     cv.waitKey()

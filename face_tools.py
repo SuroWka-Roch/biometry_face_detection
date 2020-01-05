@@ -34,6 +34,7 @@ def pic_AND(pic1, pic2):
     and_pic[and_table] = 255
     return and_pic
 
+
 def erode_dilate_for(number, pic):
     kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
     for _ in range(number):
@@ -42,29 +43,28 @@ def erode_dilate_for(number, pic):
 
     return pic
 
-def check_proportions(pic,tolerance=0.6):
+
+def check_proportions(pic, tolerance=0.6):
     """Take binary return only spaces with golden proportions"""
     golden_proportion = 1.6
     im = pic.copy()
-    
+
     picRBG = cv.cvtColor(im, cv.COLOR_GRAY2BGR)
 
     # Find the contour of the leming
-    contour,_ = cv.findContours(pic.copy(),cv.RETR_EXTERNAL,cv.CHAIN_APPROX_SIMPLE)
-
+    contour, _ = cv.findContours(
+        pic.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
     # And draw it on the original image
     for c in contour:
         # enter your filtering here
-        x,y,w,h = cv.boundingRect(c)
-        cv.rectangle(picRBG,(x,y),(x+w,y+h),(0,255,0),2)
+        x, y, w, h = cv.boundingRect(c)
+        cv.rectangle(picRBG, (x, y), (x+w, y+h), (0, 255, 0), 2)
         #find proportion
         proportion = h/w
-        if abs(proportion-golden_proportion)>tolerance:
-            pic = cv.fillConvexPoly(pic,c,0)
+        if abs(proportion-golden_proportion) > tolerance:
+            pic = cv.fillConvexPoly(pic, c, 0)
 
-    cv.imshow("removed non perfect",pic)
-    cv.waitKey(0)
 
 def fill_holes(img):
     """Fill holes in binary image"""
@@ -74,12 +74,26 @@ def fill_holes(img):
     im_flood = ~img.copy()
 
     mask = np.zeros((hight+2, width+2), np.uint8)
-    cv.floodFill(im_flood, mask, (0, 0), 255)
+    cv.floodFill(im_flood, mask, (0, 0), 0)
 
-    pic_final = im_flood & img
+    cv.imshow("flood", im_flood)
+
+    pic_final = im_flood | img
+    cv.imshow("lol", pic_final)
 
     return pic_final
 
+
+def apply_mask(pic, pic_binary):
+    hight = pic.shape[0]
+    width = pic.shape[1]
+    new_image = np.zeros(pic.shape, dtype=np.uint8)
+    for h in range(hight):
+        for w in range(width):
+            if pic_binary[h][w] == 255:
+                new_image[h][w] = pic[h][w]
+
+    return new_image
 
 
 if __name__ == "__main__":
